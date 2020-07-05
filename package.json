@@ -1,0 +1,22 @@
+{
+  "name": "fullscreen-webcam",
+  "version": "1.0.0",
+  "description": "",
+  "main": "webcam.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/defualt/fullscreen-webcam.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/defualt/fullscreen-webcam/issues"
+  },
+  "homepage": "https://github.com/defualt/fullscreen-webcam#readme",
+  "scripts": {
+    "dev": "python -m SimpleHTTPServer 8000"
+  }
+}

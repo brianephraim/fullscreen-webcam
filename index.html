@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>press escape for fullscreen</title>
+    <script src="webcam.js"></script>
+    <style type="text/css">
+      html, body {
+        margin: 0;
+        background-color: black;
+      }
+      video {
+         width: 100%;
+         /* pointer-events: none; */
+       }
+       video::-webkit-media-controls {
+        display: none;
+      }
+    </style>
+  </head>
+
+  <body>
+    <video></video>
+
+  </body>
+</html>
