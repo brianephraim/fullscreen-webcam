@@ -43,6 +43,7 @@ window.onload = function () {
 
   if (debug && window.location.host.indexOf('localhost') >= 0) {
     navigator.mediaDevices.enumerateDevices().then(function (devices) {
+      console.log('devices',devices);
       devices.forEach(function (device) {
         console.log(device.kind + ": LABEL = \"" + device.label + "\" ID = " + device.deviceId);
       });
