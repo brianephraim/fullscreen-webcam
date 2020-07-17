@@ -1,0 +1,1 @@
+{"version":3,"sources":["webpack:///./src/pages/index.js"],"names":["WebamPage"],"mappings":"2FAAA,uBACeA,YAAf","file":"component---src-pages-index-js-b7991e589a099eb01879.js","sourcesContent":["import WebamPage from './webcam';\nexport default WebamPage\n"],"sourceRoot":""}
