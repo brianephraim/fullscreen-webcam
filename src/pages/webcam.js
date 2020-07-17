@@ -1,39 +1,103 @@
 import React, {PureComponent} from "react"
 import { Link } from "gatsby"
 import injectSheet from 'react-jss';
+// import { withPrefix } from "gatsby"
 
 import Layout from "../components/layout"
 import SEO from "../components/seo"
+import ChromeLogo from "../components/ChromeLogo"
 
 console.log('injectSheet',injectSheet);
 
+const withPrefix = (str) => str;
+const buttonStyleBase = {
+  borderRadius: 5,
+  backgroundColor: '#ccc',
+  marginTop:5,
+  marginBottom:5,
+  cursor: 'pointer',
+  paddingTop: 5,
+  paddingBottom: 5,
+  paddingRight: 10,
+  paddingLeft: 10,
+};
 const styles = {
   h1: {
     fontSize: 50,
     color: 'green',
   },
   deviceSelectorPresser: {
-    borderRadius: 5,
+    ...buttonStyleBase,
     backgroundColor: '#eee',
-    margin:5,
-    cursor: 'pointer',
-    paddingTop: 5,
-    paddingBottom: 5,
-    paddingRight: 10,
-    paddingLeft: 10,
   },
   deviceSelector: {
     display: 'flex',
     flexDirection:'column',
     alignItems:'flex-start',
     marginBottom: 20,
+    backgroundColor:'#ddd',
+    padding:20,
   },
   webcamVideo: {
-    width: '100%'
+    width: '100%',
+    transform: 'scale(-1, 1)',
+  },
+  webcamVideoContainer: {
+    display: 'flex',
+    flexDirection:'column',
+    alignItems:'flex-start',
+    marginBottom: 20,
+    borderWidth: 3,
+    borderColor: '#ddd',
+    borderStyle: 'solid',
+    padding: 20,
+  },
+  fullscreenButton: {
+    ...buttonStyleBase,
+    alignSelf: 'flex-start',
+    backgroundColor:'#444',
+    color:'#fff',
+  },
+  chromeLogoContainer: {
+    width:60,
+  },
+  worksBestInChromeContainer: {
+    display: 'flex',
+    alignItems: 'center',
+    alignSelf: 'flex-end',
+  },
+  worksBestInChromeText: {
+    marginBottom:0,
+    marginLeft: 10,
+  },
+  toggleWebcamButton: {
+    marginTop:30,
+    marginBottom:30,
+    borderWidth:5,
+    borderStyle:'solid',
+    borderColor:'orange',
+    color:'orange',
+    textAlign:'center',
+    fontSize:30,
+    padding:30,
+    fontWeight:'bold',
+    borderRadius: 18,
+    cursor: 'pointer',
+  },
+  stepContainer: {
+    backgroundColor:'#ddd',
+    margin:20,
+    padding:20,
+  },
+  videoContainer: {
   },
 };
 
+const noop = () => null;
 class Presser extends PureComponent {
+  static defaultProps = {
+    onPress: noop
+  };
   onClick = () => {
     this.props.onPress(this.props.value);
   };
@@ -51,7 +115,7 @@ const defaultConstraints = {
   audio: false,
   video: true
 };
-class WebcamVideo extends PureComponent {
+class WebcamVideo_notConnected extends PureComponent {
   async componentDidMount(){
     this.keydownHandler = (event) => {
       var key = event.key; // Or const {key} = event; in ES6+
@@ -115,14 +179,14 @@ class WebcamVideo extends PureComponent {
 
 
   enterFullscreen = () => {
-    if (this.videoRef.requestFullscreen) {
-      this.videoRef.requestFullscreen(); // W3C spec
+    if (this.videoContainerRef.requestFullscreen) {
+      this.videoContainerRef.requestFullscreen(); // W3C spec
     } else if (this.videoRef.mozRequestFullScreen) {
-      this.videoRef.mozRequestFullScreen(); // Firefox
+      this.videoContainerRef.mozRequestFullScreen(); // Firefox
     } else if (this.videoRef.webkitRequestFullscreen) {
-      this.videoRef.webkitRequestFullscreen(); // Safari
+      this.videoContainerRef.webkitRequestFullscreen(); // Safari
     } else if (this.videoRef.msRequestFullscreen) {
-      this.videoRef.msRequestFullscreen(); // IE/Edge
+      this.videoContainerRef.msRequestFullscreen(); // IE/Edge
     }
   }
   exitFullscreen = () => {
@@ -141,20 +205,56 @@ class WebcamVideo extends PureComponent {
       this.exitFullscreen();
     }
   }
-
+  getRefVideoContainer = (ref) => {
+    console.log('ab')
+    this.videoContainerRef = ref;
+  };
   getRef = (ref) => {
-    console.log('a')
     this.videoRef = ref;
   };
   render(){
+    const {classes} = this.props;
     return (
-      <video
-        ref={this.getRef}
-        className={this.props.className}
-      />
+      <div className={classes.webcamVideoContainer}>
+        <div className={classes.worksBestInChromeContainer}>
+          <div className={classes.chromeLogoContainer}>
+            <ChromeLogo style={{width:60}}/>
+          </div>
+          <p className={classes.worksBestInChromeText}>Work best in Chrome</p>
+        </div>
+        <Presser
+          onPress={this.enterFullscreen}
+          className={classes.fullscreenButton}
+        >
+          <span>Make webcam fullscreen </span>
+          <span></span>
+        </Presser>
+        <p>(then press "esc" key to exit fullscreen)</p>
+        <div ref={this.getRefVideoContainer} className={classes.videoContainer}>
+          <video
+            ref={this.getRef}
+            className={this.props.className}
+          />
+        </div>
+      </div>
     );
   }
 }
+const WebcamVideo = injectSheet(styles)(WebcamVideo_notConnected);
+
+class Step_notConnected extends PureComponent {
+  render(){
+    const {classes,imgSrc,text,number} = this.props;
+    return (
+      <div className={classes.stepContainer}>
+        <h2 style={classes.stepH2}>Step {number}</h2>
+        {!!imgSrc && (<img src={withPrefix(imgSrc)} />)}
+        <p>{text}</p>
+      </div>
+    );
+  }
+}
+const Step = injectSheet(styles)(Step_notConnected);
 
 class WebcamPage extends PureComponent {
   constructor(){
@@ -199,46 +299,89 @@ class WebcamPage extends PureComponent {
       selectedDevice: value,
     });
   };
+  toggleWebcam = () => {
+    console.log('asdfasdf')
+    this.setState({
+      webcamVisible: !this.state.webcamVisible,
+    })
+  };
   render(){
     const {classes = {}} = this.props;
-    const {devices = emptyArray} = this.state;
+    const {devices = emptyArray,webcamVisible} = this.state;
+    console.log('webcamVisible',webcamVisible);
     return (
       <Layout>
-        <SEO title="Page two" />
-        <h1 className={classes.h1}>Press ESCAPE on your keyboard to toggle fullscreen webcam video</h1>
+
+        <SEO title="FORCE FOCUS YOUR CAMERA DURING A ZOOM CALL" />
+
+
+        <h1 className={classes.h1}>How to force your camera to be the focus during a Zoom call, even if other people are talking.</h1>
+        <Presser
+          onPress={this.toggleWebcam}
+          className={classes.toggleWebcamButton}
+        >
+          <span>{!!webcamVisible ? 'Hide webcam' : 'Show webcam'}</span>
+          <span></span>
+        </Presser>
         {
-          (devices.length > 1) && (
+          !!webcamVisible && (
             <>
-              <p>Select your camera {this.state.test}</p>
-              <div className={classes.deviceSelector}>
-                {
-                  devices.map((device) => {
-                    const {label,deviceId} = device;
-                    return (
-                      <Presser
-                        key={deviceId}
-                        onPress={this.onPressDeviceSelector}
-                        value={device}
-                        className={classes.deviceSelectorPresser}
-                      >
-                        <span>{label}</span>
-                        <span></span>
-                      </Presser>
-                    );
-                  })
-                }
-              </div>
+              {
+                (typeof this.state.selectedDevice !== 'undefined') && (
+                  <WebcamVideo
+                    selectedDevice={this.state.selectedDevice}
+                    className={classes.webcamVideo}
+                  />
+                )
+              }
+              {
+                (devices.length > 1) && (
+                  <div className={classes.deviceSelector}>
+                    <p>Multiple webcams connected.  Which one do you want to use?</p>
+                    {
+                      devices.map((device) => {
+                        const {label,deviceId} = device;
+                        return (
+                          <Presser
+                            key={deviceId}
+                            onPress={this.onPressDeviceSelector}
+                            value={device}
+                            className={classes.deviceSelectorPresser}
+                          >
+                            <span>{label}</span>
+                            <span></span>
+                          </Presser>
+                        );
+                      })
+                    }
+                  </div>
+                )
+              }
             </>
           )
         }
-        {
-          (typeof this.state.selectedDevice !== 'undefined') && (
-            <WebcamVideo
-              selectedDevice={this.state.selectedDevice}
-              className={classes.webcamVideo}
-            />
-          )
-        }
+
+        <Step
+          number={1}
+          imgSrc={'/zoom1.png'}
+          text={'In your Zoom meeting, press "Share Screen" (green button in the bottom center)'}
+        />
+        <Step
+          number={2}
+          imgSrc={'/zoom-screen-share-options.png'}
+          text={'A selection screen will appear.  Select the box showing this very webpage.  It should be labeled something like "Google Chrome - FORCE FOCUS YOUR CAMERA DURING A ZOOM CALL"'}
+        />
+        <Step
+          number={3}
+          imgSrc={'/zoom-sharing-webpage.png'}
+          text={'This very webpage should be the foreground of your computer now, with a green box around the window.  On this webpage, find the button that says "Show webcam" at the top. You will see your webcam video within this very webpage.  Now click "Make webcam fullscreen".  (You can press the "esc" key on your keyboard to exit fullscreen mode.)'}
+        />
+        <Step
+          number={4}
+          imgSrc={'/zoom-fullscreen-webpage.png'}
+          text={'Now you are screen sharing this webpage which is showing a fullscreen live video of your webcam.  Everyone on your Zoom call can see only you, even if they start talking.'}
+        />
+
       </Layout>
     );
   }

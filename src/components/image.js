@@ -25,8 +25,9 @@ const Image = () => {
       }
     }
   `)
-
+  console.log('data',data);
+  if (!data.placeholderImage.childImageSharp){
+    return null;
+  }
   return <Img fluid={data.placeholderImage.childImageSharp.fluid} />
 }
-
-export default Image

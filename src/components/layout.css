@@ -624,3 +624,7 @@ pre tt:after {
 video::-webkit-media-controls {
  display: none;
 }
+
+video:-webkit-full-scren {
+    transform: rotate(9deg) !important;
+}

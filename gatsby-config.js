@@ -1,9 +1,10 @@
 module.exports = {
-  pathPrefix: "/fullscreen-webcam",
+  // pathPrefix: "/fullscreen-webcam",
+  // assetPrefix: "/fullscreen-webcam",
   siteMetadata: {
-    title: `Make your webacam the focus of Zoom, even if other people are talking dot com (or something) `,
-    description: `Kick off your next, great Gatsby project with this default starter. This barebones starter ships with the main Gatsby configuration files you might need.`,
-    author: `@gatsbyjs`,
+    title: `Video Call Tips `,
+    description: `Tips for video calls and video conferences using software like Zoom, Skype, BLuejeans, Google Meet, GoToMeeting, etc.`,
+    author: `@videocalltips`,
   },
   plugins: [
     `gatsby-plugin-jss`,
